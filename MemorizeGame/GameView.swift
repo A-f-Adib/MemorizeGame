@@ -15,6 +15,7 @@ struct GameView: View {
         VStack {
             ScrollView {
                 cards
+                    .animation(.default, value: viewModel.cards)
             }
             Button("Shuffle") {
                 viewModel.shuffle()
@@ -27,9 +28,12 @@ struct GameView: View {
     var cards : some View {
         LazyVGrid (columns: [GridItem(.adaptive(minimum: 85))])
         {
-            ForEach(viewModel.cards.indices, id: \.self) { index in
-                CardView(viewModel.cards[index])
+            ForEach(viewModel.cards) { data in
+                CardView(data)
                     .aspectRatio(2/3, contentMode: .fit)
+                    .onTapGesture {
+                        viewModel.choose(data)
+                    }
             }
         }
         .foregroundColor(.orange)
@@ -62,6 +66,7 @@ struct CardView : View {
             shape.fill()
                 .opacity(card.isFaceUP ? 0 : 1)
         }
+        .opacity(card.isFaceUP || !card.isMatched ? 1 : 0)
         
     }
 }
